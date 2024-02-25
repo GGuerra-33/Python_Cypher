@@ -1,0 +1,1 @@
+He eliminado la GUI porque tkinter no soporta el "drag and drop" y como solución temporal hay que sustituir "file_path" por la dirección del archivo que quieres encriptar o desencriptar, estoy hay que hacerlo dentro del mismo script.
