@@ -1,14 +1,9 @@
-import tkinter
+#Reemplazar "file_path" con la dirección del archivo que quieres encriptar o desencriptar
+import sys
 import hashlib
 import base64
 
-window = tkinter.Tk()
-window.title("Encriptador")
-window.geometry("300x200")
-window.config(bg="black")
-
-def encrypt_file(event):
-    file_path = event.widget.tk.call("selection", "get")
+def encrypt_file(file_path):
     file = open(file_path)
     data = file.read()
     file.close()
@@ -23,11 +18,9 @@ def encrypt_file(event):
     new_file.write(ciphertext)
     new_file.close()
 
-    message = tkinter.Label(window, text="Archivo encriptado correctamente", fg="green", bg="black")
-    message.pack()
+    print("Archivo encriptado correctamente")
 
-def decrypt_file(event):
-    file_path = event.widget.tk.call("selection", "get")
+def decrypt_file(file_path):
     file = open(file_path, "rb")
     data = file.read()
     file.close()
@@ -42,15 +35,15 @@ def decrypt_file(event):
     new_file.write(plaintext)
     new_file.close()
 
-    message = tkinter.Label(window, text="Archivo desencriptado correctamente", fg="green", bg="black")
-    message.pack()
+    print("Archivo desencriptado correctamente")
 
-def show_instruction():
-    instruction = tkinter.Label(window, text="Arrastra y suelta el archivo que deseas encriptar o desencriptar", fg="white", bg="black") 
-    instruction.pack()
+if __name__ == "__main__":
+    action = sys.argv[1]
+    file_path = sys.argv[2]
 
-window.bind("<B1-Motion>", encrypt_file)
-window.bind("<B3-Motion>", decrypt_file)
-show_instruction()
-
-window.mainloop()
+    if action == "encrypt":
+        encrypt_file(file_path)
+    elif action == "decrypt":
+        decrypt_file(file_path)
+    else:
+        print("Invalid action. Please use 'encrypt' or 'decrypt'.")
