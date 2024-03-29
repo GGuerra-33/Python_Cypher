@@ -1,56 +1,102 @@
-import tkinter
-import hashlib
-import base64
+from pygal import Bar
+from frequency import *
 
-window = tkinter.Tk()
-window.title("Encriptador")
-window.geometry("300x200")
-window.config(bg="black")
 
-def encrypt_file(event):
-    file_path = event.widget.tk.call("selection", "get")
-    file = open(file_path)
-    data = file.read()
-    file.close()
+alphabet = list("abcdefghijklmnñopqrstuvwxyz")
+code = {}
 
-    key = hashlib.sha256(b"1234567890123456").digest()
+def reversed_alphabet():
+    backwards = list(reversed(alphabet))
 
-    ciphertext = base64.b64encode(hashlib.pbkdf2_hmac('sha256', data.encode(), key, 100000))
+    for i in range(len(alphabet)):
+        code[alphabet[i]] = backwards[i]
 
-    new_file_path = file_path + ".enc"
-    new_file = open(new_file_path, "wb")
 
-    new_file.write(ciphertext)
-    new_file.close()
 
-    message = tkinter.Label(window, text="Archivo encriptado correctamente", fg="green", bg="black")
-    message.pack()
+def frequency(text):
+    text = list(text.lower())
 
-def decrypt_file(event):
-    file_path = event.widget.tk.call("selection", "get")
-    file = open(file_path, "rb")
-    data = file.read()
-    file.close()
+    freq = {}
+    for letter in alphabet:
+        freq[letter] = 0
 
-    key = hashlib.sha256(b"1234567890123456").digest()
+    total_letters = len(text)
 
-    plaintext = hashlib.pbkdf2_hmac('sha256', base64.b64decode(data), key, 100000).decode()
+    for letter in text:
+        if letter in freq:
+            freq[letter]+=1
 
-    new_file_path = file_path.replace(".enc", "")
-    new_file = open(new_file_path, "w")
+    for letter in freq:
+        freq[letter] = freq[letter]/total_letters *100
 
-    new_file.write(plaintext)
-    new_file.close()
+    return freq
 
-    message = tkinter.Label(window, text="Archivo desencriptado correctamente", fg="green", bg="black")
-    message.pack()
 
-def show_instruction():
-    instruction = tkinter.Label(window, text="Arrastra y suelta el archivo que deseas encriptar o desencriptar", fg="white", bg="black") 
-    instruction.pack()
+def make_chart(text,language):
+    chart = Bar()
+    chart.title = 'Frequency analysis'
+    chart.x_labels = text.keys()
+    chart.add('Target message', text.values())
+    chart.add('Language', language.values())
 
-window.bind("<B1-Motion>", encrypt_file)
-window.bind("<B3-Motion>", decrypt_file)
-show_instruction()
+    chart.render_to_file("bar_chart.svg")
 
-window.mainloop()
+
+def atbash(text):
+    text = text.lower()
+    output = ""
+
+    for letter in text:
+        if letter in code:
+            output += code[letter]
+
+    return output
+
+
+def get_text(filename):
+    with open(filename) as f:
+        text = f.read().replace('\n', '')
+
+    return text
+
+
+#Crea el menu
+def menu():
+    choice = ""
+
+    while choice != "c" and choice != "f" and choice != "m":
+        choice = input("Please enter c to encode/decode text, f to perform frequency analysis, or m to encrypt your own short message: ")
+
+    if choice == "c":
+        print("Running your message through the cypher... ")
+        message = get_text("input.txt")
+        code = atbash(message)
+        print(code)
+
+    elif choice == 'f':
+        print('Analysing message…')
+        message = get_text("input.txt")
+        message_freq = frequency(message)
+
+        language = input('Which language is your message in? \n1. English \n2. French \n3. Spanish\n Type: ')
+
+        if language == '1':
+            lang_freq = english  # Importa el diccionario en ingles
+        elif language == '2':
+            lang_freq = french
+        elif language == '3':
+            lang_freq = spanish
+
+        make_chart(message_freq, lang_freq)
+
+    elif choice == "m":
+        message = input("What would you like to encode: ")
+        code = atbash(message)
+        print(code)
+
+
+def main():
+    reversed_alphabet()
+    menu()
+
+main()

@@ -1,1 +1,1 @@
-Programa simple de python que permite encriptar y desencriptar documentos utilizando la función hash SHA-256 de la familia SHA-2 (Secure Hash Algorithm 2) para la generación de claves, y PBKDF2 (Password-Based Key Derivation Function 2) con HMAC (Hash-based Message Authentication Code) como función pseudoaleatoria para el cifrado
+
